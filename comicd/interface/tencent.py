@@ -34,18 +34,6 @@ class Tencent(Web):
     def image(self, url, referer):
         return self._request.binary(url, headers={'Host': self.host[1], 'Referer': referer})
 
-    def url(self, url):
-        try:
-            return self._pattern['comic_url'].match(url).group()
-        except AttributeError:
-            return ''
-
-    def curl(self, url):
-        try:
-            return self._pattern['chapter_url'].match(url).group()
-        except AttributeError:
-            return ''
-
     def title(self, data):
         content = data[0]
         try:

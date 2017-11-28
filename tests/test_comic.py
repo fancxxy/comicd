@@ -8,6 +8,12 @@ from comicd.model import Comic
 class TestComic(unittest.TestCase):
     info = [
         {
+            'url': 'http://manhua.dmzj.com/yiquanchaoren/',
+            'title': '一拳超人',
+            'ctitle': '第124话',
+            'pages': 57
+        },
+        {
             'url': 'https://manhua.163.com/source/4458002705630123103',
             'title': '天才麻将少女',
             'ctitle': '第1话 邂逅',

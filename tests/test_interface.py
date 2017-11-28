@@ -8,7 +8,8 @@ from comicd.interface import Interface
 class TestInterface(unittest.TestCase):
     hosts = {
         'ac.qq.com': '腾讯漫画',
-        'manhua.163.com': '网易漫画'
+        'manhua.163.com': '网易漫画',
+        'manhua.dmzj.com': '动漫之家'
     }
 
     def test_interface(self):
