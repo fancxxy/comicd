@@ -59,7 +59,7 @@ class Comic(Model):
     @Lazy
     def count(self):
         if self.chapters:
-            return len(self.chapters) + 1
+            return len(self.chapters)
         else:
             return 0
 
@@ -80,7 +80,7 @@ class Comic(Model):
 
     def __getitem__(self, index):
         if self.chapters:
-            return Chapter(self.chapters[index - 1][1])
+            return Chapter(self.chapters[index][1])
         else:
             return None
 
@@ -131,7 +131,7 @@ class Chapter(Model):
     @Lazy
     def count(self):
         if self.images:
-            return len(self.images) + 1
+            return len(self.images)
         else:
             return 0
 

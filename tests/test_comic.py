@@ -10,25 +10,25 @@ class TestComic(unittest.TestCase):
         {
             'url': 'http://manhua.dmzj.com/yiquanchaoren/',
             'title': '一拳超人',
-            'ctitle': '第124话',
-            'pages': 57
+            'ctitle': '特别篇',
+            'pages': 31
         },
         {
             'url': 'https://manhua.163.com/source/4458002705630123103',
             'title': '天才麻将少女',
             'ctitle': '第1话 邂逅',
-            'pages': 32
+            'pages': 33
         },
         {
             'url': 'https://manhua.163.com/source/5015375858980120764',
             'title': '银魂',
             'ctitle': '1',
-            'pages': 58
+            'pages': 59
         },
         {
             'url': 'http://ac.qq.com/Comic/comicInfo/id/505430',
             'title': '航海王',
-            'ctitle': '第1话 ROMANCE DAWN',
+            'ctitle': '第1话 ROMANCE DAWN 冒险的序幕',
             'pages': 57
         },
         {
@@ -36,6 +36,12 @@ class TestComic(unittest.TestCase):
             'title': '火影忍者',
             'ctitle': '第1话 旋涡鸣人',
             'pages': 61
+        },
+        {
+            'url': 'http://www.dm5.com/manhua-guanlangaoshou/',
+            'title': '灌篮高手',
+            'ctitle': '灌篮高手第31卷',
+            'pages': 93
         }
     ]
 
@@ -45,8 +51,8 @@ class TestComic(unittest.TestCase):
                 comic = Comic(info['url'])
                 self.assertTrue(comic.title, info['title'])
 
-                chapter = comic[1]
+                chapter = comic[0]
                 self.assertNotEqual(chapter, None)
-                self.assertTrue(chapter.title, info['title'])
-                self.assertTrue(chapter.ctitle, info['ctitle'])
-                self.assertTrue(chapter.count, info['pages'])
+                self.assertEqual(chapter.title, info['title'])
+                self.assertEqual(chapter.ctitle, info['ctitle'])
+                self.assertEqual(chapter.count, info['pages'])
