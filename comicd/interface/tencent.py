@@ -18,7 +18,9 @@ class Tencent(Web):
         'title': compile(r'<h2 class="works-intro-title ui-left"><strong>(.*?)</strong></h2>'),
         'scope': compile(r'(?s)<div class="works-chapter-list-wr ui-left">(.*?)</ol>'),
         'chapter': compile(r'<a target="_blank" title=[\'\"][^：]+：(.*?)[\'\"] href=[\'\"](.*?)[\'\"]>'),
-        'javascript': compile(r'var\s+DATA\s+=\s+\'(.*?)\'')
+        'javascript': compile(r'var\s+DATA\s+=\s+\'(.*?)\''),
+
+        'cover': compile(r'<img src="(.*?)" alt=".*?" height="280" width="210"/>')
     }
 
     def __init__(self):
@@ -40,6 +42,14 @@ class Tencent(Web):
             return self._pattern['title'].search(content).group(1)
         except AttributeError:
             return ''
+
+    def cover(self, data):
+        content = data[0]
+        try:
+            cover_url = self._pattern['cover'].search(content).group(1)
+            return self._request.binary(cover_url)
+        except AttributeError:
+            return None
 
     def chapters(self, data):
         content = data[0]

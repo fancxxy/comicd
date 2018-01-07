@@ -23,7 +23,7 @@ $ python setup.py install
 
 ``` python
 # 导入模块
->>> from comicd.model import Comic, Chapter, Config
+>>> from comicd import Comic, Chapter, Config
 
 # 查看当前配置
 >>> config = Config()

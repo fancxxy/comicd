@@ -34,7 +34,8 @@ class Dm5(Web):
         'url_in': compile(r'"/(.*?)"'),
         'url_post': compile(r'(\?cid=\d+&key=\w+)'),
 
-        'filename': compile(r'http://(.*?/)+(.*?)\?cid=')
+        'filename': compile(r'http://(.*?/)+(.*?)\?cid='),
+        'cover': compile(r'<div class="innr91" style=" margin-right:20px">\s+<img src="(.*?)" alt=".*?" />')
     }
 
     def __init__(self):
@@ -69,6 +70,14 @@ class Dm5(Web):
             return self._pattern['title'].search(content).group(1)
         except AttributeError:
             return ''
+
+    def cover(self, data):
+        content = data[0]
+        try:
+            cover_url = self._pattern['cover'].search(content).group(1)
+            return self._request.binary(cover_url)
+        except AttributeError:
+            return None
 
     def chapters(self, data):
         content = data[0]

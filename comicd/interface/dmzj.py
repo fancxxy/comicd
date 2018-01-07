@@ -23,14 +23,16 @@ class Dmzj(Web):
         'chapter_title': compile(r'var g_chapter_name = "(.*?)";'),
 
         'comic_url': compile(r'^http://manhua.dmzj.com/(\w+)/?$'),
-        'chapter_url': compile(r'^http://manhua.dmzj.com/(\w+)/\d+\.shtml')
+        'chapter_url': compile(r'^http://manhua.dmzj.com/(\w+)/\d+\.shtml'),
+        'cover': compile(
+            r'<div class="anim_intro_ptext">\s+<a href=".*?"><img alt=".*?" src="(.*?)" id="cover_pic"/></a>')
     }
 
     def __init__(self):
         super().__init__()
 
     def comic(self, url):
-        return [self._request.content(url, headers={'Host': self.host[0]})]
+        return [self._request.content(url, headers={'Host': self.host[0]}), url]
 
     def chapter(self, url):
         content = self._request.content(url, headers={'Host': self.host[0]})
@@ -45,6 +47,15 @@ class Dmzj(Web):
             return self._pattern['title'].search(content).group(1)
         except AttributeError:
             return ''
+
+    def cover(self, data):
+        content = data[0]
+        url = data[1]
+        try:
+            cover_url = self._pattern['cover'].search(content).group(1)
+            return self._request.binary(cover_url, headers={'Host': self.host[1], 'Referer': url})
+        except AttributeError:
+            return None
 
     def chapters(self, data):
         content = data[0]

@@ -5,7 +5,7 @@ from comicd.utils import LazyProperty as Lazy
 from comicd.error import ComicdError
 from re import compile
 from os import makedirs
-from os.path import join, exists
+from os.path import join, exists, abspath
 from comicd.interface import interface
 from comicd.config import config
 
@@ -55,6 +55,18 @@ class Comic(Model):
         if self.data:
             chapters = self.instance.chapters(self.data)
         return chapters
+
+    def download_cover(self, path):
+        complete, binary = False, None
+        if self.data:
+            binary = self.instance.cover(self.data)
+            abs_path = abspath(path)
+            if not exists(abs_path):
+                makedirs(abs_path)
+            with open(join(abs_path, self.instance.name + '_' + self.title + '.jpg'), 'wb') as image:
+                image.write(binary)
+            complete = True
+        return complete
 
     @Lazy
     def count(self):

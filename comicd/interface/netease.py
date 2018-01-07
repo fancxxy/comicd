@@ -18,7 +18,8 @@ class Netease(Web):
         'pg_config_images': compile(r'(?s)window.PG_CONFIG.images = (.*?);'),
         'image_url': compile(r'''(?x)title:\ "([^"]+)",\nwidth[^\n]+\nheight[^\n]+\nimageType[^\n]+\npath[^\n]+\n
                          indexId[^\n]+\nverifyStatus[^\n]+\nurl:\ window.IS_SUPPORT_WEBP\ \?\ "[^"]+"\ :\ "([^"]+)"'''),
-        'image_suffix': compile(r'(.*?)(?<=%3D)')
+        'image_suffix': compile(r'(.*?)(?<=%3D)'),
+        'cover': compile(r'<img class="sr-bcover" src="(.*?)"/>')
     }
 
     def __init__(self):
@@ -45,6 +46,14 @@ class Netease(Web):
             return self._pattern['title'].search(content).group(1)
         except AttributeError:
             return ''
+
+    def cover(self, data):
+        content = data[0]
+        try:
+            cover_url = self._pattern['cover'].search(content).group(1)
+            return self._request.binary(cover_url)
+        except AttributeError:
+            return None
 
     def chapters(self, data):
         try:
