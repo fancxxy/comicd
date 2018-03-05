@@ -1,6 +1,6 @@
 # comicd
-comicd是一个漫画下载工具，指定漫画主页的url或者某个章节的url，就可以把对应的资源下载到本地。  
-代码只在Python 3.6版本上测试过。
+comicd是一个漫画下载库，指定漫画主页的url或者某个章节的url，下载漫画资源。  
+支持多线程可配置，代码只在Python 3.6版本上测试过。
 
 
 ## 支持
@@ -29,6 +29,10 @@ $ python setup.py install
 >>> config = Config()
 >>> config
 <Config object home='/Users/fxx/Comics' threads={comic:1, chapter:1, image:5} repeat=3>
+
+# 查看支持的网站
+>>> Comic.support()
+{'网易漫画', '动漫之家', '腾讯漫画', '动漫屋'}
 
 # 创建Comic对象
 >>> comic = Comic('http://ac.qq.com/Comic/comicInfo/id/505430')

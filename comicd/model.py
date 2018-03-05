@@ -24,6 +24,10 @@ class Model(object):
         except (AttributeError, KeyError):
             raise ComicdError('comicd does not support this website')
 
+    @classmethod
+    def support(cls):
+        return interface.lists
+
 
 class Comic(Model):
     def __init__(self, url):

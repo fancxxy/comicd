@@ -24,6 +24,14 @@ class Interface(object):
     def __getitem__(self, key):
         return self._interface[key]
 
+    @property
+    def lists(self):
+        return {cls.name for cls in self._interface.values()}
+
+    @lists.setter
+    def lists(self, value):
+        raise AttributeError('lists is not a writable attribute')
+
 
 class Web(object):
     _pattern = {}
