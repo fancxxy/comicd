@@ -91,7 +91,7 @@ class Comic(Model):
     def _check(self, raw_url):
         url = self.instance.url(raw_url)
         if not url:
-            raise ComicdError('chapter url is incorrect')
+            raise ComicdError('comic url is incorrect')
         return url
 
     def __getitem__(self, index):

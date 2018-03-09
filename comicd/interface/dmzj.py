@@ -22,8 +22,8 @@ class Dmzj(Web):
         'comic_title': compile(r'var g_comic_name = "(.*?)";'),
         'chapter_title': compile(r'var g_chapter_name = "(.*?)";'),
 
-        'comic_url': compile(r'^http://manhua.dmzj.com/(\w+)/?$'),
-        'chapter_url': compile(r'^http://manhua.dmzj.com/(\w+)/\d+\.shtml'),
+        'comic_url': compile(r'^https://manhua.dmzj.com/(\w+)/?$'),
+        'chapter_url': compile(r'^https://manhua.dmzj.com/(\w+)/\d+\.shtml'),
         'cover': compile(
             r'<div class="anim_intro_ptext">\s+<a href=".*?"><img alt=".*?" src="(.*?)" id="cover_pic"/></a>')
     }
