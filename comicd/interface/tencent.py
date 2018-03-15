@@ -14,6 +14,7 @@ class Tencent(Web):
     _pattern = {
         'comic_url': compile(r'^http://ac.qq.com/Comic/[Cc]omicInfo/id/(.+)/?$'),
         'chapter_url': compile(r'^http://ac.qq.com/ComicView/index/id/(\d+)/cid/\d+/?$'),
+        'summary': compile(r'(?s)<p class="works-intro-short ui-text-gray9">\s+(.*?)</p>'),
 
         'title': compile(r'<h2 class="works-intro-title ui-left"><strong>(.*?)</strong></h2>'),
         'scope': compile(r'(?s)<div class="works-chapter-list-wr ui-left">(.*?)</ol>'),
@@ -50,6 +51,13 @@ class Tencent(Web):
             return self._request.binary(cover_url)
         except AttributeError:
             return None
+
+    def summary(self, data):
+        content = data[0]
+        try:
+            return self._pattern['summary'].search(content).group(1)
+        except AttributeError:
+            return ''
 
     def chapters(self, data):
         content = data[0]

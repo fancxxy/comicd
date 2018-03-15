@@ -37,7 +37,7 @@ class Comic(Model):
         self.url = self._check(url)
 
     def init(self):
-        if self.title == '' or self.chapters == []:
+        if self.title == '' or self.summary == '' or self.chapters == []:
             return False
         else:
             return True
@@ -59,6 +59,13 @@ class Comic(Model):
         if self.data:
             chapters = self.instance.chapters(self.data)
         return chapters
+
+    @Lazy
+    def summary(self):
+        summary = ''
+        if self.data:
+            summary = self.instance.summary(self.data)
+        return summary.strip(' ')
 
     def download_cover(self, path):
         complete, binary = False, None

@@ -79,6 +79,9 @@ class Dm5(Web):
         except AttributeError:
             return None
 
+    def summary(self, data):
+        return ''
+
     def chapters(self, data):
         content = data[0]
         try:

@@ -55,6 +55,7 @@ class TestComic(unittest.TestCase):
                 comic = Comic(info['url'])
                 self.assertEqual(comic.title, info['title'])
                 self.assertTrue(comic.download_cover('./cover'), True)
+                comic.summary
 
                 chapter = comic[0]
                 self.assertNotEqual(chapter, None)

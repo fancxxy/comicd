@@ -19,7 +19,8 @@ class Netease(Web):
         'image_url': compile(r'''(?x)title:\ "([^"]+)",\nwidth[^\n]+\nheight[^\n]+\nimageType[^\n]+\npath[^\n]+\n
                          indexId[^\n]+\nverifyStatus[^\n]+\nurl:\ window.IS_SUPPORT_WEBP\ \?\ "[^"]+"\ :\ "([^"]+)"'''),
         'image_suffix': compile(r'(.*?)(?<=%3D)'),
-        'cover': compile(r'<img class="sr-bcover" src="(.*?)"/>')
+        'cover': compile(r'<img class="sr-bcover" src="(.*?)"/>'),
+        'summary': compile(r'<dt>简介</dt>\s+<dd>(.*?)</dd>')
     }
 
     def __init__(self):
@@ -54,6 +55,13 @@ class Netease(Web):
             return self._request.binary(cover_url)
         except AttributeError:
             return None
+
+    def summary(self, data):
+        content = data[0]
+        try:
+            return self._pattern['summary'].search(content).group(1)
+        except AttributeError:
+            return ''
 
     def chapters(self, data):
         try:

@@ -25,7 +25,8 @@ class Dmzj(Web):
         'comic_url': compile(r'^https://manhua.dmzj.com/(\w+)/?$'),
         'chapter_url': compile(r'^https://manhua.dmzj.com/(\w+)/\d+\.shtml'),
         'cover': compile(
-            r'<div class="anim_intro_ptext">\s+<a href=".*?"><img alt=".*?" src="(.*?)" id="cover_pic"/></a>')
+            r'<div class="anim_intro_ptext">\s+<a href=".*?"><img alt=".*?" src="(.*?)" id="cover_pic"/></a>'),
+        'summary': compile(r'<div class="line_height_content">\s+(.*?)\s*<br')
     }
 
     def __init__(self):
@@ -56,6 +57,13 @@ class Dmzj(Web):
             return self._request.binary(cover_url, headers={'Host': self.host[1], 'Referer': url})
         except AttributeError:
             return None
+
+    def summary(self, data):
+        content = data[0]
+        try:
+            return self._pattern['summary'].search(content).group(1)
+        except AttributeError:
+            return ''
 
     def chapters(self, data):
         content = data[0]
