@@ -21,7 +21,9 @@ class Tencent(Web):
         'chapter': compile(r'<a target="_blank" title=[\'\"][^：]+：(.*?)[\'\"] href=[\'\"](.*?)[\'\"]>'),
         'javascript': compile(r'var\s+DATA\s+=\s+\'(.*?)\''),
 
-        'cover': compile(r'<img src="(.*?)" alt=".*?" height="280" width="210"/>')
+        'cover': compile(r'<img src="(.*?)" alt=".*?" height="280" width="210"/>'),
+        'update': compile(r'''(?x)<span\ class="ui-font-fb">最新话：</span><a\ class="works-ft-new"\ href="(.*?)">\[(.*?)\]
+            (</a><span\ class="ui-pl10\ ui-text-gray6">(.*?)</span>)?''')
     }
 
     def __init__(self):
@@ -58,6 +60,15 @@ class Tencent(Web):
             return self._pattern['summary'].search(content).group(1)
         except AttributeError:
             return ''
+
+    def update(self, data):
+        content = data[0]
+        try:
+            # abandon second value
+            newest_url, newest_title, _, newest_date = self._pattern['update'].findall(content)[0]
+            return 'http://ac.qq.com' + newest_url, newest_title, newest_date.replace('.', '-')
+        except AttributeError:
+            return '', '', ''
 
     def chapters(self, data):
         content = data[0]

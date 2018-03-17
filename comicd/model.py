@@ -67,17 +67,26 @@ class Comic(Model):
             summary = self.instance.summary(self.data)
         return summary.strip(' ')
 
-    def download_cover(self, path):
+    @Lazy
+    def update(self):
+        newest_url = newest_title = newest_date = ''
+        if self.data:
+            newest_url, newest_title, newest_date = self.instance.update(self.data)
+        return newest_url, newest_title, newest_date
+
+    def download_cover(self, path, filename=None):
         complete, binary = False, None
         if self.data:
             binary = self.instance.cover(self.data)
             abs_path = abspath(path)
             if not exists(abs_path):
                 makedirs(abs_path)
-            with open(join(abs_path, self.instance.name + '_' + self.title + '.jpg'), 'wb') as image:
+            filename = join(abs_path, filename) \
+                if filename else join(abs_path, self.instance.name + '_' + self.title + '.jpg')
+            with open(filename, 'wb') as image:
                 image.write(binary)
             complete = True
-        return complete
+        return complete, filename
 
     @Lazy
     def count(self):

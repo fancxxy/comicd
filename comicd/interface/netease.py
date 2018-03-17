@@ -63,6 +63,9 @@ class Netease(Web):
         except AttributeError:
             return ''
 
+    def update(self, data):
+        return '', '', ''
+
     def chapters(self, data):
         try:
             return [(c['title'], 'https://manhua.163.com/reader/' + c['bookId'] + '/' + c['sectionId']) for c in

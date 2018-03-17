@@ -26,7 +26,9 @@ class Dmzj(Web):
         'chapter_url': compile(r'^https://manhua.dmzj.com/(\w+)/\d+\.shtml'),
         'cover': compile(
             r'<div class="anim_intro_ptext">\s+<a href=".*?"><img alt=".*?" src="(.*?)" id="cover_pic"/></a>'),
-        'summary': compile(r'<div class="line_height_content">\s+(.*?)\s*<br')
+        'summary': compile(r'<div class="line_height_content">\s+(.*?)\s*<br'),
+        'update': compile(r'''(?x)<th>最新收录：</th>\s+<td><a\ href="(.*?)"\s+id="newest_chapter">(.*?)</a>&nbsp;
+                        <br\ /><span\ class="update2">(.*?)</span></td>''')
     }
 
     def __init__(self):
@@ -65,12 +67,20 @@ class Dmzj(Web):
         except AttributeError:
             return ''
 
+    def update(self, data):
+        content = data[0]
+        try:
+            newest_url, newest_title, newest_date = self._pattern['update'].findall(content)[0]
+            return 'https://manhua.dmzj.com' + newest_url, newest_title, newest_date
+        except AttributeError:
+            return '', '', ''
+
     def chapters(self, data):
         content = data[0]
         try:
             scope = ' '.join(self._pattern['scope'].findall(content))
             chapters = self._pattern['chapter'].findall(scope)
-            return [(c[2], 'http://manhua.dmzj.com' + c[0]) for c in chapters]
+            return [(c[2], 'https://manhua.dmzj.com' + c[0]) for c in chapters]
 
         except AttributeError:
             return []
