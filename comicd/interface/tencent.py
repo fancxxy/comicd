@@ -93,7 +93,12 @@ class Tencent(Web):
 
     def images(self, data):
         try:
-            return [(p['pid'] + '.jpg', p['url']) for p in data[1]['picture']]
+            # return [(p['pid'] + '.jpg', p['url']) for p in data[1]['picture']]
+            count, result = 1, []
+            for p in data[1]['picture']:
+                result.append(('{:0>3}.jpg'.format(count), p['url']))
+                count += 1
+            return result
         except KeyError:
             return []
 

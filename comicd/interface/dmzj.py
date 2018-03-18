@@ -102,7 +102,12 @@ class Dmzj(Web):
     def images(self, data):
         images = data[1]
         if images:
-            return [(unquote(split(i)[1]), ('http://images.dmzj.com/' + i).replace('\\', '')) for i in images]
+            # return [(unquote(split(i)[1]), ('http://images.dmzj.com/' + i).replace('\\', '')) for i in images]
+            count, result = 1, []
+            for i in images:
+                result.append(('{:0>3}.jpg'.format(count), ('http://images.dmzj.com/' + i).replace('\\', '')))
+                count += 1
+            return result
         else:
             return []
 

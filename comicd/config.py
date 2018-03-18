@@ -10,7 +10,7 @@ class Config(object):
             cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3):
+    def __init__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler'):
         self._home = expanduser(home)
 
         self.log = join(self._home, '.comicd.log')
@@ -20,6 +20,8 @@ class Config(object):
         self._threads = [comic, chapter, image]
 
         self.repeat = repeat
+
+        self.mode = mode
 
     @property
     def home(self):
@@ -39,13 +41,13 @@ class Config(object):
             value = [1, 1, 5]
         self._threads = value
 
-    def __call__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3):
-        self.__init__(home, comic, chapter, image, repeat)
+    def __call__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler'):
+        self.__init__(home, comic, chapter, image, repeat, mode)
         return self
 
     def __repr__(self):
-        return '<Config object home=\'{}\' threads={{comic:{}, chapter:{}, image:{}}} repeat={}>'.format(
-            self._home, self.threads[0], self.threads[1], self.threads[2], self.repeat)
+        return '<Config object home=\'{}\' threads={{comic:{}, chapter:{}, image:{}}} repeat={} mode={}>'.format(
+            self._home, self.threads[0], self.threads[1], self.threads[2], self.repeat, self.mode)
 
     __str__ = __repr__
 

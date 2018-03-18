@@ -87,8 +87,13 @@ class Netease(Web):
 
     def images(self, data):
         try:
-            return [(record['title'] + ('.jpg' if record['title'].find('.') == -1 else ''),
-                     self._pattern['image_suffix'].match(record['url']).group(1)) for record in data[2]]
+            # return [(record['title'] + ('.jpg' if record['title'].find('.') == -1 else ''),
+            #          self._pattern['image_suffix'].match(record['url']).group(1)) for record in data[2]]
+            count, result = 1, []
+            for record in data[2]:
+                result.append(('{:0>3}.jpg'.format(count), self._pattern['image_suffix'].match(record['url']).group(1)))
+                count += 1
+            return result
         except AttributeError:
             return ''
 

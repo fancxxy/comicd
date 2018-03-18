@@ -45,7 +45,8 @@ class Crawler(object):
 
         self._log = Log()
 
-        signal(SIGINT, Crawler.sig_handler)
+        if config.mode == 'crawler':
+            signal(SIGINT, Crawler.sig_handler)
 
     def initialize(self, urls):
         for u in urls:
@@ -67,9 +68,11 @@ class Crawler(object):
                          for _ in range(image_thread if image_thread else self._config.threads[2])]
 
         [t.start() for t in comic_threads]
-        sleep(1)
+        if config.mode == 'crawler':
+            sleep(1)
         [t.start() for t in chapter_threads]
-        sleep(1)
+        if config.mode == 'crawler':
+            sleep(1)
         [t.start() for t in image_threads]
 
         [t.join() for t in (*comic_threads, *chapter_threads, *image_threads)]
