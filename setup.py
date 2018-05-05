@@ -12,6 +12,7 @@ setup(
     author_email='fancxxy@gmail.com',
     url='https://github.com/fancxxy/comicd',
     description='comic download tool',
+    scripts=['comic'],
     license='MIT',
     classifiers=[],
     packages=find_packages(exclude=('tests',)),

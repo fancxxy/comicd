@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from os.path import expanduser, join
+from comicd.utils import Singleton
 
 
-class Config(object):
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, '_instance'):
-            cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
-
+class Config(Singleton):
     def __init__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler'):
         self._home = expanduser(home)
 
