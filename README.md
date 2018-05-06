@@ -81,10 +81,10 @@ $ python setup.py install
 >>> comic.download()
 ```
 
-## 命令行
+## 命令
 ``` shell
-$ python -m comicd -h
-usage: __main__.py [-h] [-u URLS [URLS ...]] [-r] [-f FILE]
+$ comic -h
+usage: comic [-h] [-u URLS [URLS ...]] [-r] [-f FILE]
 
 Comic Download Tool
 
@@ -95,8 +95,3 @@ optional arguments:
   -r, --resume          resume last crawl task
   -f FILE, --file FILE  crawl from file
 ```
-
-## 截图
-![Download](screenshots/download.gif)
-
-

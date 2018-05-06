@@ -18,7 +18,7 @@ class Tencent(Web):
 
         'title': compile(r'<h2 class="works-intro-title ui-left"><strong>(.*?)</strong></h2>'),
         'scope': compile(r'(?s)<div class="works-chapter-list-wr ui-left">(.*?)</ol>'),
-        'chapter': compile(r'<a target="_blank" title=[\'\"][^：]+：(.*?)[\'\"] href=[\'\"](.*?)[\'\"]>'),
+        'chapters': compile(r'<a target="_blank" title=[\'\"][^：]+：(.*?)[\'\"] href=[\'\"](.*?)[\'\"]>'),
         'javascript': compile(r'var\s+DATA\s+=\s+\'(.*?)\''),
 
         'cover': compile(r'<img src="(.*?)" alt=".*?" height="280" width="210"/>'),
@@ -74,7 +74,7 @@ class Tencent(Web):
         content = data[0]
         try:
             scope = self._pattern['scope'].search(content).group(1)
-            chapters = self._pattern['chapter'].findall(scope)
+            chapters = self._pattern['chapters'].findall(scope)
             return [(c[0], 'http://ac.qq.com' + c[1]) for c in chapters]
         except AttributeError:
             return []

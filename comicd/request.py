@@ -23,7 +23,7 @@ class Request(object):
             headers = {**self.default, **headers}
         else:
             headers = self.default
-        url = urllib.parse.quote(url, safe='%/:?=&[]')
+        url = urllib.parse.quote(url, safe='%/:?=&[]+')
         req = urllib.request.Request(url, data=data, headers=headers)
         try:
             with urllib.request.urlopen(req) as res:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from re import compile, sub
+from re import compile
 from comicd.interface import Web
 from comicd.utils import unpack
 from urllib.parse import urlparse
@@ -12,54 +12,56 @@ class Dm5(Web):
     host = ['www.dm5.com', ]
 
     _pattern = {
-        'title': compile(r'<div class="inbt"><h1 class="new_h2">(.*?)</h1>'),
-        'scope': compile(r'<ul class="nr7">.*?</ul>(.*?)<div class="ff"></div>'),
-        'chapters': compile(r'<a class="tg" href="(.*?)" title="(.*?)">'),
-
         'comic_url': compile(r'^http://www.dm5.com/manhua-[^/]+/?$'),
         'chapter_url': compile(r'^http://www.dm5.com/\w+/?$'),
 
-        'dm5_ctitle': compile(r'''(?x)<span\ class="center">(<a\ href=".*?">.*?</a>\ >\ ){2}
-                                           <a\ href=".*?">([^\ ]+)\ 漫画</a>\ >\ <h1\ class="active">(.*?)</h1></span>'''),
-        'dm5_curl': compile(r'var DM5_CURL = "(.*?)"'),
-        'dm5_cid': compile(r'var DM5_CID=(.*?);'),
-        'dm5_count': compile(r'var DM5_IMAGE_COUNT=(.*?);'),
-        'dm5_key_script': compile(r'''(?x)<input\ type="hidden"\ id="dm5_key"\ value=""\ />\s+
-                                                <script\ type="text/javascript">\ (.*?)\n</script>'''),
+        'comic_details': compile(r'(?s)<div class="banner_detail_form">(.*?)(?=</section>)'),
+        'chapter_lists': compile(r'<div id="chapterlistload">(.*?)</div>'),
 
-        'js_function': compile(r'eval\((.*)\)'),
-        'dm5_key': compile(r';var [^=]+=(.*?);'),
+        'title': compile(r'<div class="info">\s+<p class="title">(.*)<span class="right">'),
+        'cover': compile(r'<div class="cover">\s+<img src="(.*?)">'),
+        'summary': compile(r'<p class="content" style=".*?">(.*?)<a href="###;" class="fold_open">\[\+展开\]</a><span style="display:none">(.*?)<a href="###;" class="fold_close">\[-折叠\]</a></span></p>|(?s)<p class="content" style=".*?">(.*?)</p>'),
+        'scope': compile(r'(?s)<ul class="view-win-list detail-list-select" id="detail-list-select-1">(.*?)<ul class="view-win-list detail-list-select"'),
+        'chapters': compile(r'<a href="(.*?)" title=".*?" target="_blank" >(.*?)\s+<span>'),
+
+        'cctitle': compile(r'<span class="right-arrow"><a href=".*?" title=".*?">(.*?)</a></span'),
+        'cptitle': compile(r'<span class="active right-arrow">(.*?)</span>'),
+
+        'dm5_cid': compile(r'var DM5_CID=(\d+);'),
+        'dm5_mid': compile(r'var DM5_MID=(\d+);'),
+        'dm5_count': compile(r'var DM5_IMAGE_COUNT=(\d+);'),
+        'dm5_sign': compile(r'var DM5_VIEWSIGN="(.*?)";'),
+        'dm5_dt': compile(r'var DM5_VIEWSIGN_DT="(.*?)";'),
 
         'url_pre': compile(r'var pix="(.*?)";'),
         'url_in': compile(r'"/(.*?)"'),
         'url_post': compile(r'(\?cid=\d+&key=\w+)'),
-
-        'filename': compile(r'http://(.*?/)+(.*?)\?cid='),
-        'cover': compile(r'<div class="innr91" style=" margin-right:20px">\s+<img src="(.*?)" alt=".*?" />')
     }
 
     def __init__(self):
         super().__init__()
 
     def comic(self, url):
-        return [self._request.content(url, headers={'Host': self.host[0], 'Referer': 'http://www.dm5.com/'})]
+        try:
+            data = self._request.content(url, headers={'Host': self.host[0], 'Referer': 'http://www.dm5.com/'})
+            comic_details = self._pattern['comic_details'].search(data).group(1)
+            chapter_lists = self._pattern['chapter_lists'].search(data).group(1)
+            return [comic_details, chapter_lists]
+        except AttributeError:
+            return ['', '']
 
     def chapter(self, url):
         return [self._request.content(url, headers={'Host': self.host[0]})]
 
     def image(self, url, referer):
         try:
-            content = self._request.content(url, headers={'Host': self.host[0], 'Referer': referer})
+            content = self._request.content(url, headers={'Host': self.host[0], 'Referer': referer, 'X-Requested-With': 'XMLHttpRequest'})
             data = unpack(content)
             url_pre = self._pattern['url_pre'].search(data).group(1)
             url_in = self._pattern['url_in'].search(data).group(1)
             url_post = self._pattern['url_post'].search(data).group(1)
-
             host = urlparse(url_pre).netloc
-
             url = url_pre + '/' + url_in + url_post
-            # filename = self._pattern['filename'].search(url).group(2)
-
             return self._request.binary(url, headers={'Host': host, 'Referer': referer})
         except AttributeError:
             return b''
@@ -67,7 +69,7 @@ class Dm5(Web):
     def title(self, data):
         content = data[0]
         try:
-            return self._pattern['title'].search(content).group(1)
+            return self._pattern['title'].search(content).group(1).strip(' ')
         except AttributeError:
             return ''
 
@@ -80,48 +82,45 @@ class Dm5(Web):
             return None
 
     def summary(self, data):
-        return ''
+        content = data[0]
+        try:
+            summary = self._pattern['summary'].findall(content)
+            return ''.join(summary[0])
+        except AttributeError:
+            return ''
 
     def chapters(self, data):
-        content = data[0]
+        content = data[1]
         try:
             scope = self._pattern['scope'].search(content).group(1)
             chapters = self._pattern['chapters'].findall(scope)
-            return [(c[1], 'http://www.dm5.com' + c[0]) for c in chapters]
+            return [(c[1], 'http://www.dm5.com' + c[0]) for c in chapters][::-1]
         except AttributeError:
             return []
 
     def cctitle(self, data):
         content = data[0]
         try:
-            return self._pattern['dm5_ctitle'].search(content).group(2)
+            return self._pattern['cctitle'].search(content).group(1).strip(' ')
         except AttributeError:
             return ''
 
     def cptitle(self, data):
         content = data[0]
         try:
-            return self._pattern['dm5_ctitle'].search(content).group(3)
+            return self._pattern['cptitle'].search(content).group(1).strip(' ')
         except AttributeError:
             return ''
 
     def images(self, data):
         content = data[0]
         try:
-            curl = 'http://www.dm5.com' + self._pattern['dm5_curl'].search(content).group(1)
-            cid = self._pattern['dm5_cid'].search(content).group(1)
-            count = self._pattern['dm5_count'].search(content).group(1)
-            key = self._dm5_key(content)
-            url = '%schapterfun.ashx?cid=%s&page={}&key=%slanguage=%d&gtk=%d' % (curl, cid, key, 1, 6)
-            return [('{:03}.jpg'.format(page), url.format(page)) for page in range(1, int(count) + 1)]  # xhr
+            dm5_cid = self._pattern['dm5_cid'].search(content).group(1)
+            dm5_mid = self._pattern['dm5_mid'].search(content).group(1)
+            dm5_count = self._pattern['dm5_count'].search(content).group(1)
+            dm5_sign = self._pattern['dm5_sign'].search(content).group(1)
+            dm5_dt = self._pattern['dm5_dt'].search(content).group(1).replace(' ', '+')
+            url = 'http://www.dm5.com/m%s/chapterfun.ashx?cid=%s&page={}&key=&language=1&gtk=6&_cid=%s&_mid=%s&_dt=%s&_sign=%s' % (dm5_cid, dm5_cid, dm5_cid, dm5_mid, dm5_dt, dm5_sign)
+            return [('{:03}.jpg'.format(page), url.format(page)) for page in range(1, int(dm5_count) + 1)]  # xhr
         except AttributeError:
             return []
-
-    def _dm5_key(self, content):
-        result = self._pattern['dm5_key_script'].search(content)
-        if result:
-            script = result.group(1)
-            data = unpack(script)
-            return sub(r'[\\\'+]', '', self._pattern['dm5_key'].search(data).group(1))
-        else:
-            return ''

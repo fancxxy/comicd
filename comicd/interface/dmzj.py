@@ -15,7 +15,7 @@ class Dmzj(Web):
     _pattern = {
         'title': compile(r'<h1>(.*?)</h1>'),
         'scope': compile(r'(?s)<div class="cartoon_online_border" [^>]*>\s+(.*?)<div class="clearfix"></div>'),
-        'chapter': compile(r'<li><a title=".*?" href="(.*?)" +(class="color_red")?>(.*?)</a>'),
+        'chapters': compile(r'<li><a title=".*?" href="(.*?)" +(class="color_red")?>(.*?)</a>'),
         'chapter_principal': compile(r'<li><a title="([^-]+-第\d+话)" href="(.*?)" +(class="color_red")?>'),
         'function': compile(r'(?s)eval\((.*?)\)\s+;'),
         'image': compile(r'"(.*?)"'),
@@ -79,7 +79,7 @@ class Dmzj(Web):
         content = data[0]
         try:
             scope = ' '.join(self._pattern['scope'].findall(content))
-            chapters = self._pattern['chapter'].findall(scope)
+            chapters = self._pattern['chapters'].findall(scope)
             return [(c[2], 'https://manhua.dmzj.com' + c[0]) for c in chapters]
 
         except AttributeError:
