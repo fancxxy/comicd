@@ -9,7 +9,7 @@ from comicd.interface import Web
 
 class Tencent(Web):
     name = '腾讯漫画'
-    host = ['ac.qq.com', 'ac.tc.qq.com']
+    host = ['ac.qq.com', 'manhua.qpic.cn']
 
     _pattern = {
         'comic_url': compile(r'^http://ac.qq.com/Comic/[Cc]omicInfo/id/(.+)/?$'),
