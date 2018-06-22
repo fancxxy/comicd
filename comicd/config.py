@@ -6,7 +6,7 @@ from comicd.utils import Singleton
 
 
 class Config(Singleton):
-    def __init__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler'):
+    def __init__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler', proxy_api=None):
         self._home = expanduser(home)
 
         self.log = join(self._home, '.comicd.log')
@@ -18,6 +18,8 @@ class Config(Singleton):
         self.repeat = repeat
 
         self.mode = mode
+
+        self.proxy = None
 
     @property
     def home(self):
@@ -37,13 +39,13 @@ class Config(Singleton):
             value = [1, 1, 5]
         self._threads = value
 
-    def __call__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler'):
-        self.__init__(home, comic, chapter, image, repeat, mode)
+    def __call__(self, home='~/Comics', comic=1, chapter=1, image=5, repeat=3, mode='crawler', proxy_api=None):
+        self.__init__(home, comic, chapter, image, repeat, mode, proxy_api)
         return self
 
     def __repr__(self):
-        return '<Config object home=\'{}\' threads={{comic:{}, chapter:{}, image:{}}} repeat={} mode={}>'.format(
-            self._home, self.threads[0], self.threads[1], self.threads[2], self.repeat, self.mode)
+        return '<Config object home=\'{}\' threads={{comic:{}, chapter:{}, image:{}}} repeat={} mode={}> proxy_api={}'.format(
+            self._home, self.threads[0], self.threads[1], self.threads[2], self.repeat, self.mode, self.proxy)
 
     __str__ = __repr__
 

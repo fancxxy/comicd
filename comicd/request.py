@@ -7,6 +7,8 @@ import urllib.error
 from re import compile
 from time import strftime, time, localtime
 from gzip import decompress
+from comicd.config import config
+# from socket import timeout
 
 
 class Request(object):
@@ -25,13 +27,21 @@ class Request(object):
             headers = self.default
         url = urllib.parse.quote(url, safe='%/:?=&[]+')
         req = urllib.request.Request(url, data=data, headers=headers)
+        if config.proxy:
+            proxy = urllib.request.urlopen(config.proxy).read().decode('utf-8')
+            handler = urllib.request.ProxyHandler({'http': proxy})
+            opener = urllib.request.build_opener(handler).open
+        else:
+            opener = urllib.request.urlopen
         try:
-            with urllib.request.urlopen(req) as res:
+            with opener(req, timeout=10) as res:
                 if res.getheader('Content-Encoding') == 'gzip':
                     res = decompress(res.read())
                 else:
                     res = res.read()
                 return res
+        # except timeout:
+        #     return None
         except Exception as e:
             return None
 
