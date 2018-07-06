@@ -3,65 +3,60 @@
 
 import unittest
 import shutil
-
+import json
 import os
 
-from comicd.model import Comic
+from comicd import Comic, Chapter
 
 
 class TestComic(unittest.TestCase):
-    info = [
-        {
-            'url': 'http://manhua.dmzj.com/yiquanchaoren/',
-            'title': '一拳超人',
-            'ctitle': '特别篇',
-            'pages': 31,
-        },
-        {
-            'url': 'https://manhua.163.com/source/4458002705630123103',
-            'title': '天才麻将少女',
-            'ctitle': '第1话 邂逅',
-            'pages': 33,
-        },
-        {
-            'url': 'https://manhua.163.com/source/5015375858980120764',
-            'title': '银魂',
-            'ctitle': '1',
-            'pages': 59,
-        },
-        {
-            'url': 'http://ac.qq.com/Comic/comicInfo/id/505430',
-            'title': '航海王',
-            'ctitle': '第1话 ROMANCE DAWN 冒险的序幕',
-            'pages': 57,
-        },
-        {
-            'url': 'http://ac.qq.com/Comic/comicInfo/id/505432',
-            'title': '火影忍者',
-            'ctitle': '第1话 旋涡鸣人',
-            'pages': 61,
-        },
-        {
-            'url': 'http://www.dm5.com/manhua-guanlangaoshou/',
-            'title': '灌篮高手',
-            'ctitle': '灌篮高手第31卷',
-            'pages': 93,
-        }
-    ]
+
+    def setUp(self):
+        with open('comic.json', 'r', encoding='utf-8') as f:
+            self.comics = json.load(f)
 
     def test_comic(self):
-        for info in self.info:
-            with self.subTest(info=info):
-                comic = Comic(info['url'])
-                self.assertEqual(comic.title, info['title'])
-                self.assertTrue(comic.download_cover('./cover'), True)
-                comic.summary
+        for comic_info in self.comics:
+            comic_instance = Comic(comic_info['comic_url'])
+            self.url(comic_info, comic_instance)
+            self.title(comic_info, comic_instance)
+            self.summary(comic_info, comic_instance)
+            self.chapter(comic_info, comic_instance)
+            self.cover(comic_instance)
 
-                chapter = comic[0]
-                self.assertNotEqual(chapter, None)
-                self.assertEqual(chapter.title, info['title'])
-                self.assertEqual(chapter.ctitle, info['ctitle'])
-                self.assertEqual(chapter.count, info['pages'])
+            chapter_instance = Chapter(comic_info['chapter_url'])
+            self.ctitle(comic_info, chapter_instance)
+            self.iurl(comic_info, chapter_instance)
+            # self.download_chapter(chapter_instance)
+
+    def url(self, comic_info, comic_instance):
+        self.assertEqual(comic_info['comic_url'], comic_instance.url)
+
+    def title(self, comic_info, comic_instance):
+        self.assertEqual(comic_info['comic_title'], comic_instance.title)
+
+    def summary(self, comic_info, comic_instance):
+        self.assertEqual(comic_info['comic_summary'], comic_instance.summary)
+
+    def chapter(self, comic_info, comic_instance):
+        chapter_number = int(comic_info['chapter_number'])
+        self.assertEqual(comic_info['chapter_title'], comic_instance.chapters[chapter_number][0])
+        self.assertEqual(comic_info['chapter_url'], comic_instance.chapters[chapter_number][1])
+
+    def cover(self, comic_instance):
+        self.assertTrue(comic_instance.download_cover('./cover'), True)
+
+    def ctitle(self, comic_info, chapter_instance):
+        self.assertEqual(comic_info['comic_title'], chapter_instance.title)
+        self.assertEqual(comic_info['chapter_title'], chapter_instance.ctitle)
+
+    def iurl(self, comic_info, chapter_instance):
+        image_number = int(comic_info['image_number'])
+        self.assertEqual(comic_info['image_filename'], chapter_instance.images[image_number][0])
+        self.assertEqual(comic_info['image_url'], chapter_instance.images[image_number][1])
+
+    # def download_chapter(self, chapter_instance):
+    #     chapter_instance.download()
 
     def tearDown(self):
         shutil.rmtree(os.path.abspath('./cover'))
