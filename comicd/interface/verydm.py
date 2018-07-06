@@ -64,7 +64,7 @@ class Verydm(Web):
         content = data[0]
         try:
             scope = self._pattern['scope'].search(content).group(1)
-            chapters = self._pattern['chapters'].findall(scope)
+            chapters = self._pattern['chapters'].findall(scope)[::-1]
             return [(c[1], 'http://www.verydm.com' + c[0]) for c in chapters]
         except AttributeError:
             return []

@@ -8,6 +8,7 @@ comicd是一个漫画下载库，指定漫画主页的url或者某个章节的ur
 * [网易漫画](https://manhua.163.com/)
 * [动漫之家](http://manhua.dmzj.com/)
 * [动漫屋](http://www.dm5.com/)
+* [非常爱漫](http://www.verydm.com)
 
 ## 安装
 ``` shell
