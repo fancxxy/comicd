@@ -20,5 +20,7 @@ class TestDownload(unittest.TestCase):
 
     def test_download_comic(self):
         for comic_info in self.comics:
-            comic_instance = Comic(comic_info['comic_url'])
-            comic_instance.download()
+            # comic_instance = Comic(comic_info['comic_url'])
+            # comic_instance.download()
+            chapter_instance = Chapter(comic_info['chapter_url'])
+            chapter_instance.download()

@@ -3,7 +3,7 @@
 
 from base64 import b64decode
 from json import loads
-from re import compile
+from re import compile, findall, sub
 from comicd.interface import Web
 
 
@@ -19,7 +19,8 @@ class Tencent(Web):
         'title': compile(r'<h2 class="works-intro-title ui-left"><strong>(.*?)</strong></h2>'),
         'scope': compile(r'(?s)<div class="works-chapter-list-wr ui-left">(.*?)</ol>'),
         'chapters': compile(r'<a target="_blank" title=[\'\"][^：]+：(.*?)[\'\"] href=[\'\"](.*?)[\'\"]>'),
-        'javascript': compile(r'var\s+DATA\s+=\s+\'(.*?)\''),
+        'data': compile(r'var\s+DATA\s+=\s+\'(.*?)\''),
+        'nonce': compile(r'window\.nonce = \'\' \+ \'(.*?)\''),
 
         'cover': compile(r'<img src="(.*?)" alt=".*?" height="280" width="210"/>'),
         'update': compile(r'''(?x)<span\ class="ui-font-fb">最新话：</span><a\ class="works-ft-new"\ href="(.*?)">\[(.*?)\]
@@ -34,7 +35,7 @@ class Tencent(Web):
 
     def chapter(self, url):
         content = self._request.content(url, headers={'Host': self.host[0]})
-        return [content, self._parse_javascript(content)]
+        return [content, self._decode(content)]
 
     def image(self, url, referer):
         return self._request.binary(url, headers={'Host': self.host[1], 'Referer': referer})
@@ -102,9 +103,20 @@ class Tencent(Web):
         except KeyError:
             return []
 
-    def _parse_javascript(self, content):
+    def _decode(self, content):
         try:
-            data = self._pattern['javascript'].search(content).group(1)
+            data = self._pattern['data'].search(content).group(1)
+            nonce = self._pattern['nonce'].search(content).group(1)
         except AttributeError:
             return {}
-        return loads(b64decode(data[1:]))
+
+        nonce = findall(r'\d+[a-zA-Z]+', nonce)
+        for n in nonce[::-1]:
+            locate = int(sub('\D', '', n)) & 255
+            string = sub('\d', '', n)
+            data = data[:locate] + data[locate+len(string):]
+
+        try:
+            return loads(b64decode(data).decode('utf8'))
+        except UnicodeDecodeError:
+            return {}
